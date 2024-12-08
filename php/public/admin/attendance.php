@@ -100,9 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
         tr.balance-negative:hover {
             background-color: rgba(220, 53, 69, 0.2) !important;
         }
+        .table-success {
+            background-color: rgba(40, 167, 69, 0.15) !important;
+        }
+        .table-danger {
+            background-color: rgba(220, 53, 69, 0.15) !important;
+        }
     </style>
 </head>
-
 <body id="page-top">
     <div id="wrapper">
         <!-- Sidebar -->
@@ -243,7 +248,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
                         `;
 
                         students.forEach(student => {
-                            const balanceClass = getBalanceClass(student.balance);
+                            // Add balance-based row coloring
+                            const balanceClass = parseFloat(student.balance) < 0 ? 'table-danger' : 
+                                               parseFloat(student.balance) > 0 ? 'table-success' : '';
+                            
                             table += `
                                 <tr class="${balanceClass}">
                                     <td>${student.student_id}</td>
@@ -277,8 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
                     studentTable.html('<div class="alert alert-danger">Error fetching students.</div>');
                 }
             });
-        }
-    </script>
+        }    </script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="../../assets/bootstrap/js/bootstrap.min.js"></script>

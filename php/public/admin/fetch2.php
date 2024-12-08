@@ -22,10 +22,9 @@ function getSectionNames($conn, $section_ids_json) {
 }
 
 if ($type === 'section') {
-    // Fetch students by section ID within section_ids JSON, excluding those marked present today
     $student_query = "
         SELECT s.student_id, s.student_surname, s.student_name, s.student_class,
-               s.group_id, s.section_ids
+               s.group_id, s.section_ids, s.balance
         FROM students s
         WHERE JSON_CONTAINS(s.section_ids, JSON_QUOTE(CAST(:selected_id AS CHAR)), '$')
         AND s.student_id NOT IN (
@@ -36,10 +35,9 @@ if ($type === 'section') {
         )
     ";
 } else {
-    // Fetch students by group ID, excluding those marked present today
     $student_query = "
         SELECT s.student_id, s.student_surname, s.student_name, s.student_class,
-               s.group_id, s.section_ids
+               s.group_id, s.section_ids, s.balance
         FROM students s
         WHERE s.group_id = :selected_id
         AND s.student_id NOT IN (
@@ -50,7 +48,6 @@ if ($type === 'section') {
         )
     ";
 }
-
 $student_stmt = $conn->prepare($student_query);
 $student_stmt->bindParam(':selected_id', $selected_id);
 $student_stmt->bindParam(':current_date', $current_date);

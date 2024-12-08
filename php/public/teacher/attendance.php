@@ -216,33 +216,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
                 },
                 success: function(data) {
                     const students = JSON.parse(data);
-                    let tableHTML = `<table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Student ID</th>
-                                        <th>Name</th>
-                                        <th>Class</th>
-                                        <th>Present</th>
-                                        <th>Additional Comments</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
+                    let tableHTML = `<div class="table-responsive">
+                            <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Present</th>
+                                    <th>Additional Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
                     students.forEach(function(student) {
-                        tableHTML += `<tr>
-                                <td>${student.student_id}</td>
-                                <td>${student.student_surname} ${student.student_name}</td>
-                                <td>${student.student_class}</td>
-                                <td><input type="checkbox" name="attendance[${student.student_id}][is_present]"></td>
-                                <td><input type="text" name="attendance[${student.student_id}][add_info]" class="form-control"></td>
-                                <input type="hidden" name="attendance[${student.student_id}][student_id]" value="${student.student_id}">
-                              </tr>`;
+                        let rowClass = '';
+                        if (parseFloat(student.balance) < 0) {
+                            rowClass = 'table-danger';
+                        } else if (parseFloat(student.balance) > 0) {
+                            rowClass = 'table-success';
+                        }
+                        
+                        tableHTML += `<tr class="${rowClass}">
+                                    <td>${student.student_id}</td>
+                                    <td>${student.student_surname} ${student.student_name}</td>
+                                    <td>${student.student_class}</td>
+                                    <td><input type="checkbox" name="attendance[${student.student_id}][is_present]"></td>
+                                    <td><input type="text" name="attendance[${student.student_id}][add_info]" class="form-control"></td>
+                                    <input type="hidden" name="attendance[${student.student_id}][student_id]" value="${student.student_id}">
+                                  </tr>`;
                     });
-                    tableHTML += `</tbody></table>`;
+                    tableHTML += `</tbody></table></div>`;
                     studentTable.html(tableHTML);
                 }
             });
         }
-
         $('#selected_type').trigger('change');
     });
     </script>
@@ -253,3 +260,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
 </body>
 
 </html>
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Optional: Set minimum width for table columns */
+    .table th,
+    .table td {
+        min-width: 100px; /* Adjust this value as needed */
+    }
+    
+    /* Make the Additional Comments column wider */
+    .table th:last-child,
+    .table td:last-child {
+        min-width: 200px; /* Adjust this value as needed */
+    }
+</style>
+  <style>
+      /* Customize the background colors for positive/negative balance */
+      .table-success {
+          background-color: rgba(40, 167, 69, 0.15) !important;
+      }
+    
+      .table-danger {
+          background-color: rgba(220, 53, 69, 0.15) !important;
+      }
+  </style>

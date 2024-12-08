@@ -10,9 +10,8 @@ $selected_id = $_POST['section_id'];
 $current_date = date('Y-m-d');
 
 if ($type === 'section') {
-    // Fetch students by section ID within section_ids JSON, excluding those marked present today
     $student_query = "
-        SELECT student_id, student_surname, student_name, student_class
+        SELECT student_id, student_surname, student_name, student_class, balance
         FROM students
         WHERE JSON_CONTAINS(section_ids, JSON_QUOTE(CAST(:selected_id AS CHAR)), '$')
         AND student_id NOT IN (
@@ -23,9 +22,8 @@ if ($type === 'section') {
         )
     ";
 } else {
-    // Fetch students by group ID, excluding those marked present today
     $student_query = "
-        SELECT student_id, student_surname, student_name, student_class
+        SELECT student_id, student_surname, student_name, student_class, balance
         FROM students
         WHERE group_id = :selected_id
         AND student_id NOT IN (
@@ -36,7 +34,6 @@ if ($type === 'section') {
         )
     ";
 }
-
 $student_stmt = $conn->prepare($student_query);
 $student_stmt->bindParam(':selected_id', $selected_id);
 $student_stmt->bindParam(':current_date', $current_date);
